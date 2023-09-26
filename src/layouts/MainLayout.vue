@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
-      <q-toolbar>
+      <q-toolbar class="bg-white text-primary">
         <q-btn
           flat
           dense
@@ -12,21 +12,41 @@
         />
 
         <q-toolbar-title> Quasar App </q-toolbar-title>
+        <template v-if="postsStore.user.id && route.path === '/'">
+          <q-btn
+            flat
+            label="add post"
+            icon="add"
+            aria-label="Menu"
+            class="q-mr-md"
+            @click="postsStore.onAddPost(true)"
+          />
 
-        <q-btn
-          v-if="postsStore.user.id"
-          flat
-          label="add post"
-          icon="add"
-          aria-label="Menu"
-          @click="postsStore.onAddPost(true)"
-        />
+          <q-select
+            class="q-my-sm"
+            filled
+            v-model="selectUser"
+            :options="users"
+            label="Filter By User"
+            option-value="id"
+            option-label="name"
+            style="width: 250px"
+          >
+            <template v-slot:append>
+              <q-icon
+                v-if="selectUser !== null"
+                name="close"
+                @click.stop.prevent="selectUser = null"
+                class="cursor-pointer"
+              /> </template
+          ></q-select>
+        </template>
       </q-toolbar>
     </q-header>
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
       <q-list>
-        <q-item-label header> Quasar App </q-item-label>
+        <q-item to="/" class="q-text-6" header> Quasar App </q-item>
 
         <EssentialLink
           v-for="link in linksList"
@@ -39,18 +59,28 @@
     <q-page-container>
       <router-view />
     </q-page-container>
-
-    
   </q-layout>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import EssentialLink from "components/EssentialLink.vue";
+import { useRoute } from "vue-router"
 
+const route = useRoute()
 import { usePostsStore } from "stores/posts";
-
 const postsStore = usePostsStore();
+const users = computed(() => postsStore.users);
+
+const selectUser = computed({
+  get() {
+    return postsStore.selectUser;
+  },
+  set(val) {
+    postsStore.selectUser = val;
+    postsStore.currentPage = 1;
+  },
+});
 const linksList = [
   {
     title: "Docs",

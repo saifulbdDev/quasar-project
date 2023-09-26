@@ -9,11 +9,17 @@
 
     <q-card-actions>
       <q-btn flat color="info" @click="emit(`edit-post`, post)" label="Edit" />
-      <q-btn flat color="secondary" label="Delete" @click="emit(`delete-post`, post)" />
+      <q-btn
+        flat
+        color="secondary"
+        label="Delete"
+        @click="emit(`delete-post`, post)"
+      />
 
       <q-space />
 
       <q-btn
+        :to="`post/${post.id}`"
         color="primary"
         label="See More"
         label-position="left"
@@ -25,16 +31,13 @@
 </template>
 
 <script setup>
-
-
-const emit = defineEmits(["delete-post", "edit-post"])
+const emit = defineEmits(["delete-post", "edit-post"]);
 const props = defineProps({
-   post: {
-      type: Object,
-      required: true,
-    },
+  post: {
+    type: Object,
+    required: true,
+  },
 });
-
 </script>
 
 <style lang="scss" scoped>

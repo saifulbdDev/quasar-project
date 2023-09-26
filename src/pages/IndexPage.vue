@@ -1,17 +1,5 @@
 <template>
-  <q-page class="">
-    <div class="q-my-lg q-mx-lg flex flex-center justify-start">
-      <q-select
-        filled
-        v-model="selectUser"
-        :options="users"
-        label="Filter By User"
-         option-value="id"
-         option-label="name"
-        style="width: 250px"
-      />
-    </div>
-
+  <q-page class="q-mt-md">
     <div class="flex flex-center">
       <BlogCard
         @deletePost="onDeletePost"
@@ -73,15 +61,19 @@ import { computed, ref } from "vue";
 
 const postsStore = usePostsStore();
 
-const users = computed(() => postsStore.users);
-const currentPage = ref(1);
-const selectUser = ref(null);
-console.log(currentPage, 'selectUser')
+const currentPage = computed({
+  get() {
+    return postsStore.currentPage;
+  },
+  set(val) {
+    postsStore.currentPage = val;
+  },
+});
+
 const rowsPerPage = ref(12);
 const { paginatedArray, numberOfPages } = usePagination({
   rowsPerPage,
   currentPage,
-  selectUser,
 });
 
 const selectPost = ref({});

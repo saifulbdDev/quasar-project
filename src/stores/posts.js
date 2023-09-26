@@ -4,14 +4,21 @@ import { api } from "boot/axios";
 export const usePostsStore = defineStore("posts", {
   state: () => ({
     posts: [],
+    comments: [],
+    post: {},
     user: {},
     users: [],
+    selectUser: null,
+    currentPage: 1,
     isAddPost: false,
     isUpdatePost: false,
     loader: false,
   }),
   getters: {
-    postsList: (state) => state.posts,
+    postsList: (state) =>
+      state.selectUser?.id
+        ? state.posts.filter((item) => item.userId === state.selectUser?.id)
+        : state.posts,
   },
   actions: {
     currentUser(user) {
@@ -37,6 +44,21 @@ export const usePostsStore = defineStore("posts", {
         const { data } = await api.get("/posts");
 
         this.posts = data;
+      } catch (error) {}
+    },
+    async getPost(id) {
+      console.log(id, "id");
+      try {
+        const { data } = await api.get(`/posts/${id}`);
+
+        this.post = data;
+      } catch (error) {}
+    },
+    async getPostComments(id) {
+      try {
+        const { data } = await api.get(`/posts/${id}/comments`);
+
+        this.comments = data;
       } catch (error) {}
     },
 

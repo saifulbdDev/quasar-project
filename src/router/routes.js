@@ -11,6 +11,11 @@ const routes = [
         meta: { auth: true },
       },
       {
+        path: "/post/:id",
+        component: () => import("pages/SinglePage.vue"),
+        meta: { auth: true },
+      },
+      {
         path: "user-list",
         component: () => import("pages/UserList.vue"),
         meta: { auth: false },
