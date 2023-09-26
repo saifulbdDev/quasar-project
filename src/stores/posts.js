@@ -17,7 +17,7 @@ export const usePostsStore = defineStore("posts", {
   getters: {
     postsList: (state) =>
       state.selectUser?.id
-        ? state.posts.filter((item) => item.userId === state.selectUser?.id)
+        ? state.posts.filter((item) => item?.userId === state.selectUser?.id)
         : state.posts,
   },
   actions: {

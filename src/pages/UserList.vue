@@ -2,7 +2,6 @@
   <div class="q-pa-md q-mx-auto" style="max-width: 550px">
     <q-toolbar class="bg-primary justify-between text-white shadow-2">
       <q-toolbar-title>Select Current User</q-toolbar-title>
-      <!-- <q-toolbar-title>User List</q-toolbar-title> -->
     </q-toolbar>
 
     <q-list bordered>
