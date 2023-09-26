@@ -8,7 +8,7 @@
         <q-separator />
         <q-input
           filled
-          class="q-mb-md"
+          class="q-px-md"
           v-model="formData.title"
           label="Post Title *"
           lazy-rules
@@ -17,6 +17,7 @@
         <q-input
           v-model="formData.body"
           filled
+          class="q-px-md"
           label="Post Body *"
           type="textarea"
           :rules="[(val) => (val && val.length > 0) || 'Please type something']"
@@ -46,7 +47,7 @@
             color="primary"
             flat
             class="q-ml-sm"
-            @click="closeForm"
+            @click="postsStore.onUpdateModel(false)"
           />
         </q-card-actions>
       </q-form>
@@ -55,33 +56,36 @@
 </template>
 
 <script setup>
-import { computed, reactive } from "vue";
+import { computed, reactive, watch } from "vue";
 import { usePostsStore } from "stores/posts";
 const props = defineProps({
-   post: {
-      type: Object,
-      required: true,
-    },
-  
+  post: {
+    type: Object,
+    required: true,
+  },
 });
+
 const formData = reactive(props.post);
+
+watch(
+  () => props.post,
+  (value) => {
+    formData.title = value.title;
+    formData.body = value.body;
+  }
+);
 const postsStore = usePostsStore();
 const isLoading = computed(() => postsStore.loader && postsStore.isUpdatePost);
-
-const closeForm = () => {
-  formData.title = null;
-  formData.body = null;
-  postsStore.onAddPost(false);
-};
 
 const submitForm = async () => {
   if (!formData.title || !formData.body) return;
 
-  await postsStore.addPost({
+  await postsStore.updatePost({
     title: formData.title,
     body: formData.body,
+    id: props?.post?.id,
   });
 
-  closeForm();
+  postsStore.onUpdateModel(false);
 };
 </script>

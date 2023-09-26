@@ -21,7 +21,7 @@ export const usePostsStore = defineStore("posts", {
     onAddPost(value) {
       this.isAddPost = value;
     },
-    onUpdatePost(value) {
+    onUpdateModel(value) {
       this.isUpdatePost = value;
     },
 
@@ -55,8 +55,11 @@ export const usePostsStore = defineStore("posts", {
 
           Notify.create({
             icon: "check_circle",
-            message: `Post "${newPost.title}" has been successfully created.`,
-            color: "dark",
+            message: `Post "${newPost.title.slice(
+              0,
+              30
+            )}..." has been successfully created.`,
+            color: "green",
             position: "top-right",
           });
         } else {
@@ -67,7 +70,42 @@ export const usePostsStore = defineStore("posts", {
         console.error("Error adding post:", error);
       } finally {
         this.loader = false;
-        this.isAddPost = false;
+      }
+    },
+    async updatePost({ title, body, id }) {
+      try {
+        this.loader = true;
+        const response = await api.put(`/posts/${id}`, {
+          title,
+          body,
+          id,
+          userId: this.user.id,
+        });
+
+        if (response.status === 200) {
+          const updatedPostIndex = this.posts.findIndex(
+            (post) => post.id === id
+          );
+          this.posts[updatedPostIndex].title = title;
+          this.posts[updatedPostIndex].body = body;
+
+          Notify.create({
+            icon: "check_circle",
+            message: `Post "${title.slice(
+              0,
+              30
+            )}..." has been successfully updated.`,
+            color: "green",
+            position: "top-right",
+          });
+        } else {
+          // Handle unexpected response status
+          console.error("Unexpected response status:", response.status);
+        }
+      } catch (error) {
+        console.error("Error adding post:", error);
+      } finally {
+        this.loader = false;
       }
     },
     async deletePost(id) {
@@ -78,6 +116,7 @@ export const usePostsStore = defineStore("posts", {
         if (response.status === 200) {
           // Delete the post from this.posts by filtering it out
           this.posts = this.posts.filter((post) => post.id !== id);
+
           Notify.create({
             icon: "check_circle",
             message: `Post with ID ${id} has been successfully deleted.`,

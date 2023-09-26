@@ -2,26 +2,32 @@
   <q-dialog v-model="postsStore.isAddPost">
     <q-card style="width: 600px; max-width: 80vw">
       <q-form @submit="submitForm" @reset="closeForm" class="q-gutter-sm">
-        <q-card-section class="q-mb-md">
+        <q-card-section class="">
           <div class="text-h6">Add Post Title</div>
         </q-card-section>
         <q-separator />
-        <q-input
-          filled
-          class="q-mb-md"
-          v-model="formData.title"
-          label="Post Title *"
-          lazy-rules
-          :rules="[(val) => (val && val.length > 0) || 'Please type something']"
-        />
-        <q-input
-          v-model="formData.body"
-          filled
-          label="Post Body *"
-          type="textarea"
-          :rules="[(val) => (val && val.length > 0) || 'Please type something']"
-        />
-
+      
+          <q-input
+            filled
+            class="q-mb-md q-px-md"
+            v-model="formData.title"
+            label="Post Title *"
+            lazy-rules
+            :rules="[
+              (val) => (val && val.length > 0) || 'Please type something',
+            ]"
+          />
+          <q-input
+            v-model="formData.body"
+            filled
+              class="q-px-md"
+            label="Post Body *"
+            type="textarea"
+            :rules="[
+              (val) => (val && val.length > 0) || 'Please type something',
+            ]"
+          />
+      
         <q-separator />
 
         <q-card-actions align="right">
@@ -31,7 +37,6 @@
             :disable="isLoading"
             :loading="isLoading"
             color="primary"
-          
           >
             Submit
             <template v-slot:loading>

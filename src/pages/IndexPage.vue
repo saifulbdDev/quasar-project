@@ -1,17 +1,33 @@
 <template>
-  <div>
-    <q-page class="flex flex-center">
+  <q-page class="">
+    <div class="q-my-lg q-mx-lg flex flex-center justify-start">
+      <q-select
+        filled
+        v-model="selectUser"
+        :options="users"
+        label="Filter By User"
+         option-value="id"
+         option-label="name"
+        style="width: 250px"
+      />
+    </div>
+
+    <div class="flex flex-center">
       <BlogCard
         @deletePost="onDeletePost"
         @editPost="onEditPost"
-        v-for="(post, i) in posts"
+        v-for="(post, i) in paginatedArray"
         :key="'post_' + i"
         :post="post"
       />
-    </q-page>
-    <BlogPaginate />
+    </div>
+    <BlogPaginate
+      class="pagination-component justify-center"
+      v-model="currentPage"
+      :numberOfPages="numberOfPages"
+    />
     <AddPost />
-    <UpdatePost :post="selectPost" :isUpdatePost="isnEditModal"/>
+    <UpdatePost :post="selectPost" />
 
     <q-dialog v-model="isDeleteModal" persistent>
       <q-card style="width: 600px">
@@ -34,7 +50,7 @@
             :loading="isLoading"
             color="primary"
           >
-            Submit
+            Delete
             <template v-slot:loading>
               <q-spinner-hourglass class="on-left" />
               Loading...
@@ -43,23 +59,34 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-  </div>
+  </q-page>
 </template>
 
 <script setup>
+import { usePagination } from "../composables/usePaginated";
+import { usePostsStore } from "stores/posts";
 import BlogCard from "components/BlogCard.vue";
 import AddPost from "components/AddPost.vue";
 import UpdatePost from "components/UpdatePost.vue";
 import BlogPaginate from "components/BlogPaginate.vue";
 import { computed, ref } from "vue";
-import { usePostsStore } from "stores/posts";
 
 const postsStore = usePostsStore();
-const posts = computed(() => postsStore.postsList);
+
 const users = computed(() => postsStore.users);
+const currentPage = ref(1);
+const selectUser = ref(null);
+console.log(currentPage, 'selectUser')
+const rowsPerPage = ref(12);
+const { paginatedArray, numberOfPages } = usePagination({
+  rowsPerPage,
+  currentPage,
+  selectUser,
+});
+
 const selectPost = ref({});
 const isDeleteModal = ref(false);
-const isnEditModal = ref(false);
+
 const isLoading = computed(() => postsStore.loader && isDeleteModal.value);
 postsStore.getPosts();
 postsStore.getUsers();
@@ -70,7 +97,7 @@ const onDeletePost = (user) => {
 };
 const onEditPost = (user) => {
   selectPost.value = user;
-  isnEditModal.value = true;
+  postsStore.onUpdateModel(true);
 };
 
 const deletePost = async () => {
