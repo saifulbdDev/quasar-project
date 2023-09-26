@@ -47,7 +47,6 @@ export const usePostsStore = defineStore("posts", {
       } catch (error) {}
     },
     async getPost(id) {
-      console.log(id, "id");
       try {
         const { data } = await api.get(`/posts/${id}`);
 
